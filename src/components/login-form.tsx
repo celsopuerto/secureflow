@@ -1,5 +1,8 @@
-import Link from "next/link"
-
+"use client";
+import { FormEvent, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -12,8 +15,28 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export function LoginForm() {
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const res = await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
+    if (res?.error) {
+      setError(res.error as string);
+    }
+    if (res?.ok) {
+      return router.push("/");
+    }
+  };
+
   return (
     <Card className="mx-auto max-w-sm">
+      <form onSubmit={handleSubmit}>
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
@@ -27,18 +50,19 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
-              placeholder="celsopuerto@gmail.com"
+              placeholder="m@example.com"
+              name="email"
               required
             />
           </div>
           <div className="grid gap-2">
-            {/* <div className="flex items-center">
+            <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
               <Link href="#" className="ml-auto inline-block text-sm underline">
                 Forgot your password?
               </Link>
-            </div> */}
-            <Input id="password" type="password" placeholder="********" required />
+            </div>
+            <Input id="password" type="password" placeholder="********" name="password" required />
           </div>
           <Button type="submit" className="w-full">
             Login
@@ -46,11 +70,12 @@ export function LoginForm() {
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="underline">
+          <Link href="/register" className="underline">
             Sign up
           </Link>
         </div>
       </CardContent>
+      </form>
     </Card>
   )
 }
