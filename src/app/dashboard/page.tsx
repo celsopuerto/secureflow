@@ -15,6 +15,9 @@ const Dashboard = () => {
       toast.success('Logout successfully'); // Show success message if user is not logged in
       router.push('/sign-in'); // Redirect to the sign-in page if not authenticated
     }
+    if (!auth) {
+      console.error("Firebase Auth not initialized correctly");
+    }
   }, [loading, user, router]);
 
   const logout = async () => {
