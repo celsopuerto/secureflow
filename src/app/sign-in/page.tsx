@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/app/firebase/config';
@@ -12,6 +12,14 @@ const SignInPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
+
+  // Ensure Firebase is initialized only on the client side
+  useEffect(() => {
+    // Your Firebase initialization logic here if needed
+    if (!auth) {
+      console.error("Firebase Auth not initialized correctly");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
