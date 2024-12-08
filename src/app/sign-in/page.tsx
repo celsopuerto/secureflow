@@ -1,33 +1,35 @@
-"use client"
+"use client";
 import { useState } from 'react';
-import { auth } from '@/app/firebase/config'; // Update with your actual Firebase config
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/app/firebase/config';
 import toast from 'react-hot-toast';
 
 const SignInPage = () => {
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
-    
-    const router = useRouter();
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      
-      setLoading(true);
-      
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        toast.success('Sign in successfully');
-        router.push('/dashboard'); // Redirect after successful sign-in
-      } catch (error: any) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError(''); // Reset error on every submit attempt
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Sign in successfully');
+      router.push('/dashboard'); // Redirect to dashboard on success
+    } catch (error: any) {
+      setError(error.message); // Set error message for user
+      toast.error(error.message); // Show error toast for better UX
+    } finally {
+      setLoading(false); // End loading state
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
