@@ -1,43 +1,33 @@
-"use client";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client"
+import { useState } from 'react';
+import { auth } from '@/app/firebase/config'; // Update with your actual Firebase config
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/app/firebase/config';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const SignInPage = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const router = useRouter();
-
-  // Ensure Firebase is initialized only on the client side
-  useEffect(() => {
-    // Your Firebase initialization logic here if needed
-    if (!auth) {
-      console.error("Firebase Auth not initialized correctly");
-    }
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setLoading(true);
-    setError(''); // Reset error on every submit attempt
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success('Sign in successfully');
-      router.push('/dashboard'); // Redirect to dashboard on success
-    } catch (error: any) {
-      setError(error.message); // Set error message for user
-      toast.error(error.message); // Show error toast for better UX
-    } finally {
-      setLoading(false); // End loading state
-    }
-  };
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    
+    const router = useRouter();
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      
+      setLoading(true);
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        toast.success('Sign in successfully');
+        router.push('/dashboard'); // Redirect after successful sign-in
+      } catch (error: any) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
